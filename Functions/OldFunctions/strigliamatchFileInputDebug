@@ -1,0 +1,109 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Mar  7 11:43:57 2021
+
+@author: avvocatomat
+"""
+
+import sys
+import os
+from pathlib import Path
+sys.path.append(os.getcwd())
+import strigliamatchLib as sm
+from strigliamatchLib import Player, compressPickle, decompressPickle
+import pandas as pd # TODO: cancellare dopo debugging
+import datetime
+
+filePath = Path("../DATA/MatchResults_FAKE.xls");
+
+startingDate = "2020-07-10";
+
+# LA FUNZIONE DA COPIARE INIZIA DA QUI.
+
+folderPath = Path("../DATA/");
+
+# Creation of the data folder path if not already existing.
+if not(os.path.isdir(folderPath)):
+       os.mkdir(folderPath);
+
+# Database file path creation.
+databaseFile = str(folderPath / "database") + ".pbz2";
+
+if os.path.exists(databaseFile):
+    database = decompressPickle(databaseFile)
+else:
+    database = {}
+
+startingDate = pd.to_datetime(startingDate);
+df = pd.read_excel(filePath);
+
+df["Data"] = pd.to_datetime(df["Data"]);
+
+dateTemp = pd.to_datetime(startingDate);
+idxDate = 0;
+
+# Si arriva al primo indice con la data giusta.
+while (df["Data"][idxDate] < startingDate):
+    idxDate += 1;
+tempDate = startingDate;
+tempIdx = idxDate;
+
+# TODO: testare cosa succede con starting date diverse.
+while (idxDate < df["Data"].count()):
+    noOfWhitePlayers = 0;
+    noOfColoredPlayers = 0;
+    whiteResult = [];
+    coloredResult = [];
+    whiteTeam = [];
+    coloredTeam = [];
+    while tempIdx < df["Data"].count() and df["Data"][tempIdx] == df["Data"][idxDate]:
+        # Vengono create le squadre e salvato il risultato.
+        if df["Squadra"][tempIdx] == "B":
+            whiteTeam.append(df["Giocatore"][tempIdx]);
+            whiteResult = df["Risultato"][tempIdx];
+            tempIdx += 1;
+        else:
+            coloredTeam.append(df["Giocatore"][tempIdx]);
+            coloredResult = df["Risultato"][tempIdx];
+            tempIdx += 1;
+    
+    # Inserimento risultati partita ed aggiunta giocatori al database in caso
+    # non siano ancora presenti.
+    idxTeam = 0;
+    for idxTeam in range(len(whiteTeam)):
+        if whiteTeam[idxTeam] in database:
+            database[whiteTeam[idxTeam]].addWhiteMatch(whiteResult);
+        else:
+            database[whiteTeam[idxTeam]] = Player(whiteTeam[idxTeam]);
+            database[whiteTeam[idxTeam]].addWhiteMatch(whiteResult);
+    idxTeam = 0;
+    for idxTeam in range(len(coloredTeam)):
+        if coloredTeam[idxTeam] in database:
+            database[coloredTeam[idxTeam]].addColoredMatch(coloredResult);
+        else:
+            database[coloredTeam[idxTeam]] = Player(coloredTeam[idxTeam]);
+            database[coloredTeam[idxTeam]].addColoredMatch(coloredResult);
+    
+    # Inserimento statistiche su compagni di squadra.
+    for idx in range(len(whiteTeam)):
+        for companionIdx in range(len(whiteTeam)):
+            playerName = whiteTeam[idx]
+            companionName = whiteTeam[companionIdx]
+            if idx != companionIdx:
+                database[playerName].addCompanion(companionName, whiteResult)
+    for idx in range(len(coloredTeam)):
+        for companionIdx in range(len(coloredTeam)):
+            playerName = coloredTeam[idx]
+            companionName = coloredTeam[companionIdx]
+            if idx != companionIdx:
+                database[playerName].addCompanion(companionName, coloredResult)
+    idxDate = tempIdx;       
+    
+    
+compressPickle(str(folderPath / "database"), database)
+    
+dateBU = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+compressPickle(str(folderPath / ("database_" + dateBU)), database)
+    
+                

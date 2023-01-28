@@ -1,0 +1,95 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Mar 21 10:30:44 2021
+
+@author: avvocatomat
+"""
+
+import os
+from strigliamatchLib import decompressPickle
+from pathlib import Path
+import numpy as np
+
+dbPath = Path("../DATA/");
+databaseFile = str(dbPath / "database") + ".pbz2";
+
+if os.path.exists(databaseFile):
+    database = decompressPickle(databaseFile)
+else:
+    print("Impossibile procedere. Nessun database disponibile.")
+    raise Exception('exit');
+minMatches = int(input('Inserire numero minimo di partite per rientrare in statistica: '))
+
+# Inserimento squadra bianca e risultato.
+noOfWhitePlayers = int(input('Inserire numero giocatori squadra BIANCA: '))
+# Inserimento squadra colorata, risultato estrapolato da risultato squadra bianca."
+noOfColoredPlayers = int(input('Inserire numero giocatori squadra COLORATA: '));
+
+whiteTeam = [];
+coloredTeam = [];
+
+for idx in range(noOfWhitePlayers):
+    playerName = input('Inserire nome giocatore ' + str(idx+1) +
+                       ' squadra bianca: ')
+    whiteTeam.append(playerName);
+
+whiteMean = [];
+reliableDataWhite = 0;
+
+for idx in range(0, len(whiteTeam)):
+    if whiteTeam[idx] in database and database[whiteTeam[idx]].noOfMatches >= minMatches:
+        playerData =[];
+        for idxInt in range(0, len(whiteTeam)): 
+            if idxInt != idx:
+                if (whiteTeam[idxInt] in database[whiteTeam[idx]].companions) and (database[whiteTeam[idx]].companions[whiteTeam[idxInt]] >= minMatches):
+                    playerData.append(
+                        database[whiteTeam[idx]].companionWins[whiteTeam[idxInt]] /
+                        database[whiteTeam[idx]].companions[whiteTeam[idxInt]]);
+                    reliableDataWhite += 1;
+                else:
+                    playerData.append(database[whiteTeam[idx]].noOfVictories /
+                                      database[whiteTeam[idx]].noOfMatches);
+                    
+        whiteMean.append(playerData);
+
+whiteTeamMean = np.mean(whiteMean);
+
+for idx in range(noOfColoredPlayers):
+    playerName = input('Inserire nome giocatore ' + str(idx+1) +
+                       ' squadra colorata: ')
+    coloredTeam.append(playerName);
+
+coloredMean = [];
+reliableDataColored = 0;
+
+for idx in range(0, len(coloredTeam)):
+    if coloredTeam[idx] in database and database[coloredTeam[idx]].noOfMatches >= minMatches:
+        playerData =[];
+        for idxInt in range(0, len(coloredTeam)): 
+            if idxInt != idx:
+                if (coloredTeam[idxInt] in database[coloredTeam[idx]].companions) and (database[coloredTeam[idx]].companions[coloredTeam[idxInt]] >= minMatches):
+                    playerData.append(
+                        database[coloredTeam[idx]].companionWins[coloredTeam[idxInt]] /
+                        database[coloredTeam[idx]].companions[coloredTeam[idxInt]]);
+                    reliableDataColored += 1;
+                else:
+                    playerData.append(database[coloredTeam[idx]].noOfVictories /
+                                      database[coloredTeam[idx]].noOfMatches);
+                    
+        coloredMean.append(playerData);
+
+coloredTeamMean = np.mean(coloredMean);
+
+if len(whiteMean) < noOfWhitePlayers/2:
+    print("\nATTENZIONE! Pochi dati a disposizione per la squadra bianca.");
+if len(coloredMean) < noOfColoredPlayers/2:
+    print("ATTENZIONE! Pochi dati a disposizione per la squadra colorata.");  
+
+if reliableDataWhite <= noOfWhitePlayers/2:
+    print("ATTENZIONE! I compagni della squadra bianca hanno giocato poche volte assieme.");
+if reliableDataColored <= noOfColoredPlayers/2:
+    print("ATTENZIONE! I compagni della squadra colorata hanno giocato poche volte assieme.");
+
+print("\nPercentuale di vittoria squadra bianca: " + "%.2f" % whiteTeamMean + "%");
+print("\nPercentuale di vittoria squadra colorata: " + "%.2f" % coloredTeamMean + "%");
