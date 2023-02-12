@@ -2,15 +2,16 @@
 """
 Created on Tue Mar 17 17:19:00 2020
 
+Script used to analyze the win percentage of 2 teams.
+
 @author: Avvocato
 """
-import pickle
+
 import sys
 import os
-sys.path.append(os.getcwd())
-"Questo si traduce con 'dal file Player.py importa la classe Player"
-from strigliamatchLib import Player, decompressPickle
-from datetime import date
+# sys.path.append(os.getcwd())
+
+from strigliamatchLib import decompressPickle
 from pathlib import Path
 
 folderPath = Path("..//DATA//");
@@ -59,12 +60,14 @@ for idx in range(len(coloredTeam)):
 coloredMean = coloredMean/coloredPlayers
         
 if whitePlayers < 3 or coloredPlayers < 3:
-    print('ATTENZIONE! Statistiche non significative, almeno una delle due squadre ha dati per meno di 3 giocatori.')
-print('La percentuale di vittoria della squadra bianca è del ' +
-      str(whiteMean*100) + ' %')
-print('La percentuale di vittoria della squadra colorata è del ' +
-      str(coloredMean*100) + ' %')
+    print('\r\nATTENZIONE! Statistiche non significative, almeno una delle due squadre ha dati per meno di 3 giocatori.')
+print('\r\nLa percentuale di vittoria della squadra bianca è del %.2f%%' % (whiteMean*100));
+print('La percentuale di vittoria della squadra colorata è del %.2f%%' % (coloredMean*100));
 
+# A proportion between the 2 win percentages is done and the probability of
+# victory is calculated.
+# whiteMean : (whiteMean + coloredMean) = victoryProb : 100
 
-
-
+whiteVictoryProb = (whiteMean*100)/(whiteMean + coloredMean);
+print('\r\nLa probabilità di vittoria della squadra bianca è del %.2f%%' % (whiteVictoryProb));
+print('La probabilità di vittoria della squadra colorata è del %.2f%%' % (100 - whiteVictoryProb));

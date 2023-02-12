@@ -14,7 +14,6 @@ import os
 from pathlib import Path
 sys.path.append(os.getcwd())
 import strigliamatchLib as sm
-import pandas as pd # TODO: cancellare dopo debugging
 
 filePath = Path("../DATA/MatchResults.xls");
     
