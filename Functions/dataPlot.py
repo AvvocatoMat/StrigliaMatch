@@ -2,7 +2,9 @@
 """
 Created on Fri Mar 13 16:05:38 2020
 
-@author: Avvocato
+This script generates figures based on the database created by dataInput.py.
+
+@author: SirLawyerMat
 """
 
 import sys

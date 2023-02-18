@@ -2,8 +2,8 @@
 """
 Created on Thu Mar 12 16:39:50 2020
 
-Classe giocatore. Contiene tutti i parametri e i metodi per creare un
-giocatore e modificarne i parametri.
+This library contains all the major functions used for database management
+and data plotting.
 
 @author: SLM
 """
@@ -339,6 +339,6 @@ def dataInputFile(filePath, startingDate, **kwargs):
     compressPickle(str(folderPath / "database"), database)
         
     dateBU = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-    compressPickle(str(folderPath / ("database_" + dateBU)), database)
+    compressPickle(str(folderPath / "Archive" / ("database_" + dateBU)), database)
         
         
