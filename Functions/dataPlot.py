@@ -45,8 +45,8 @@ for key in dataBase:
                dataBase[key].noOfLosses], width, label = 'Vittore/Sconfitte')
     axs[0].set_xticklabels(['Vittorie', 'Sconfitte'], fontsize = labelSize)
     axs[0].set_xticks([1, 2])
-    axs[0].set_yticks(range(max([dataBase[key].noOfVictories,
-                                 dataBase[key].noOfLosses])+1))
+    axs[0].set_yticks(range(round(max([dataBase[key].noOfVictories,
+                                 dataBase[key].noOfLosses])+1)))
     axs[0].grid(True)
     fig.suptitle(key, fontsize = titleSize, y = 0.95)
     axs[1].bar([1,2], [dataBase[key].whiteMatches,
@@ -88,7 +88,7 @@ for key in dataBase:
     plt.bar(range(len(orderedCompanions)),
             list(orderedCompanions.values()), width, align='center',
             label = 'VittorieCompagni')
-    plt.yticks(ticks = range(max(orderedCompanions.values())+1),
+    plt.yticks(ticks = range(round(max(orderedCompanions.values())+1)),
                fontsize = labelSize)
     plt.xticks(range(len(orderedCompanions)),
                [*orderedCompanions], fontsize = labelSize,

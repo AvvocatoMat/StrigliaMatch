@@ -62,7 +62,7 @@ class Player:
         self.noOfMatches = self.noOfMatches + 1;
         self.whiteMatches = self.whiteMatches + 1;
         if result:
-            self.noOfVictories = self.noOfVictories + 1;
+            self.noOfVictories = self.noOfVictories + result;
         else:
             self.noOfLosses = self.noOfLosses + 1;
             
@@ -74,7 +74,7 @@ class Player:
         self.noOfMatches = self.noOfMatches + 1;
         self.coloredMatches = self.coloredMatches + 1;
         if result:
-            self.noOfVictories = self.noOfVictories + 1;
+            self.noOfVictories = self.noOfVictories + result;
         else:
             self.noOfLosses = self.noOfLosses + 1;
             
